@@ -1,0 +1,10 @@
+# core-image-minimal for qemux86-64 with ferrite-agent and ferrite-gateway.
+#
+#   kas-container build kas/qemux86-64.yml
+#   kas-container shell kas/qemux86-64.yml -c "runqemu qemux86-64 nographic slirp"
+header:
+  version: 14
+  includes:
+    - kas/include/ferrite-base.yml
+
+machine: qemux86-64

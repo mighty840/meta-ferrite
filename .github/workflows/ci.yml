@@ -1,0 +1,83 @@
+name: CI
+
+# Parses the layer with bitbake and runs yocto-check-layer, both inside the
+# kas container. There is no full image build here: from an empty sstate cache
+# the build compiles a cross toolchain plus the Rust compiler and LLVM, which
+# takes several hours on a 4-core hosted runner and needs more disk than the
+# runner has free. See "Continuous integration" in README.md for options.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  KAS_VERSION: "5.5"
+  KAS_CONTAINER_SHA256: 7a8186f18d14ec6bec3f8d5188eba7a60f1ef4b5587af15917527588cc7d738a
+  KAS_CONTAINER_ENGINE: docker
+
+jobs:
+  parse:
+    name: bitbake -p (${{ matrix.machine }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        machine: [qemuarm64, qemux86-64]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install kas-container
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/kas-container" \
+            "https://raw.githubusercontent.com/siemens/kas/$KAS_VERSION/kas-container"
+          echo "$KAS_CONTAINER_SHA256  $RUNNER_TEMP/kas-container" | sha256sum -c -
+          chmod +x "$RUNNER_TEMP/kas-container"
+
+      - name: Parse all recipes
+        env:
+          KAS_WORK_DIR: ${{ runner.temp }}/kas-work
+        run: |
+          mkdir -p "$KAS_WORK_DIR"
+          "$RUNNER_TEMP/kas-container" shell kas/${{ matrix.machine }}.yml -c "bitbake -p"
+
+      - name: Show the ferrite recipes
+        env:
+          KAS_WORK_DIR: ${{ runner.temp }}/kas-work
+        run: |
+          "$RUNNER_TEMP/kas-container" shell kas/${{ matrix.machine }}.yml \
+            -c "bitbake-layers show-recipes 'ferrite-*' 'packagegroup-ferrite*'"
+
+  check-layer:
+    name: yocto-check-layer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install kas-container
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/kas-container" \
+            "https://raw.githubusercontent.com/siemens/kas/$KAS_VERSION/kas-container"
+          echo "$KAS_CONTAINER_SHA256  $RUNNER_TEMP/kas-container" | sha256sum -c -
+          chmod +x "$RUNNER_TEMP/kas-container"
+
+      # kas-container mounts this repository at /repo. kas/check-layer.yml
+      # leaves meta-ferrite out of bblayers.conf so that the tool can compare
+      # signatures with and without it.
+      - name: yocto-check-layer
+        env:
+          KAS_WORK_DIR: ${{ runner.temp }}/kas-work
+        run: |
+          mkdir -p "$KAS_WORK_DIR"
+          "$RUNNER_TEMP/kas-container" shell kas/check-layer.yml \
+            -c "yocto-check-layer --no-auto-dependency /repo"

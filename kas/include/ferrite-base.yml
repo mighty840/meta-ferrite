@@ -1,0 +1,37 @@
+# Common settings for the meta-ferrite example builds: Yocto scarthgap (5.0
+# LTS), poky with systemd, core-image-minimal plus the ferrite packages.
+# Use one of the machine files in kas/, not this file directly.
+header:
+  version: 14
+
+distro: poky
+target: core-image-minimal
+
+repos:
+  # This repository.
+  meta-ferrite:
+
+  poky:
+    url: https://git.yoctoproject.org/poky
+    branch: scarthgap
+    commit: b6ae714a1d1bfae8384654a13da15996cac64712
+    layers:
+      meta:
+      meta-poky:
+
+  # Rust >= 1.85 for scarthgap (scarthgap itself ships 1.75).
+  meta-lts-mixins:
+    url: https://git.yoctoproject.org/meta-lts-mixins
+    branch: scarthgap/rust
+    commit: eedcdc7486ff15c3510c2ceff68c87d9db141312
+
+local_conf_header:
+  ferrite: |
+    INIT_MANAGER = "systemd"
+    CORE_IMAGE_EXTRA_INSTALL += "packagegroup-ferrite"
+  development: |
+    # Development image: passwordless root login on the console.
+    # Do not use these settings for production images.
+    EXTRA_IMAGE_FEATURES ?= "debug-tweaks"
+    INHERIT += "rm_work"
+    RM_WORK_EXCLUDE += "ferrite-agent ferrite-gateway"

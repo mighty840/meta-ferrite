@@ -1,0 +1,33 @@
+[Unit]
+Description=ferrite edge gateway (USB/BLE/HTTP to ferrite-server)
+Documentation=https://github.com/mighty840/ferrite-sdk
+Wants=network-online.target
+After=network-online.target bluetooth.service
+
+[Service]
+Type=simple
+EnvironmentFile=@SYSCONFDIR@/ferrite/gateway.env
+# GATEWAY_ARGS (from gateway.env) adds command-line options such as --ble.
+ExecStart=@BINDIR@/ferrite-gateway --buffer-db @LOCALSTATEDIR@/lib/ferrite-gateway/buffer.db $GATEWAY_ARGS
+# A clean exit (all receivers stopped) must come back too.
+Restart=always
+RestartSec=5
+
+User=ferrite-gateway
+Group=ferrite-gateway
+# Serial ports; 99-ferrite.rules gives the dialout group access.
+SupplementaryGroups=dialout
+StateDirectory=ferrite-gateway
+WorkingDirectory=@LOCALSTATEDIR@/lib/ferrite-gateway
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,15 @@
+# Build environment for yocto-check-layer: the same layers as the example
+# builds, minus meta-ferrite itself (the tool adds the layer under test).
+#
+#   kas shell kas/check-layer.yml -c "yocto-check-layer --no-auto-dependency \$KAS_WORK_DIR/meta-ferrite"
+header:
+  version: 14
+  includes:
+    - kas/include/ferrite-base.yml
+
+machine: qemux86-64
+
+repos:
+  meta-ferrite:
+    layers:
+      .: disabled
