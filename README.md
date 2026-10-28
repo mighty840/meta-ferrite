@@ -29,7 +29,7 @@ work offline from a download mirror like any other recipe.
 | Layers | `openembedded-core` (scarthgap); `meta-lts-mixins` branch `scarthgap/rust` |
 | Rust | 1.85 or newer |
 | Init system | systemd (units and sysusers files are installed only with the `systemd` distro feature) |
-| Tested on | qemuarm64 (built and booted), qemux86-64 (parsed) |
+| Tested on | qemuarm64 and qemux86-64 (built and booted in QEMU) |
 
 ferrite-sdk needs Rust 1.85 or newer, while scarthgap ships Rust 1.75. The
 Yocto Project's [meta-lts-mixins](https://git.yoctoproject.org/meta-lts-mixins/log/?h=scarthgap/rust)
