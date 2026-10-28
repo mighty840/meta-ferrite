@@ -1,7 +1,9 @@
 # Build environment for yocto-check-layer: the same layers as the example
-# builds, minus meta-ferrite itself (the tool adds the layer under test).
+# builds, minus meta-ferrite itself (the tool adds the layer under test and
+# compares signatures with and without it). kas-container mounts this
+# repository at /repo:
 #
-#   kas shell kas/check-layer.yml -c "yocto-check-layer --no-auto-dependency \$KAS_WORK_DIR/meta-ferrite"
+#   kas-container shell kas/check-layer.yml -c "yocto-check-layer --no-auto-dependency /repo"
 header:
   version: 14
   includes:
@@ -13,3 +15,8 @@ repos:
   meta-ferrite:
     layers:
       .: disabled
+
+local_conf_header:
+  # Without meta-ferrite in the baseline there is no packagegroup-ferrite.
+  ferrite: |
+    INIT_MANAGER = "systemd"

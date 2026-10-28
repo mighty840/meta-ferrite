@@ -20,7 +20,7 @@ SRC_URI += " \
     file://gateway.env \
 "
 
-inherit systemd useradd
+inherit pkgconfig systemd useradd
 
 # libsqlite3-sys links the system SQLite (cargo_common sets
 # LIBSQLITE3_SYS_USE_PKG_CONFIG) instead of its bundled copy.

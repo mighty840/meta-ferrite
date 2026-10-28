@@ -80,8 +80,9 @@ ferrite-agent identity
 
 Both services point at the placeholder `https://ferrite.example.com` until
 configured; they keep running and buffer data meanwhile. A first build from an
-empty cache takes about 1.5 hours on a 24-core machine and about 50 GB of disk
-space, most of it for the Rust and LLVM toolchains.
+empty cache took about 70 minutes on a 24-core machine and about 31 GB of disk
+space (6.5 GB downloads, 4.6 GB shared state, 20 GB `tmp` with `rm_work`),
+most of it for the Rust and LLVM toolchains.
 
 ## Configuring the agent
 
@@ -161,7 +162,8 @@ By default the gateway also accepts chunks from Ethernet/Wi-Fi devices on HTTP
 port 4001; pass `--http-ingest-port 0` in `GATEWAY_ARGS` to turn that off.
 
 With the `usb` option the package installs udev rules
-(`/lib/udev/rules.d/99-ferrite.rules`) that create stable names such as
+(`99-ferrite.rules` in `/usr/lib/udev/rules.d`, or `/lib/udev/rules.d` without
+`usrmerge`) that create stable names such as
 `/dev/ferrite-nucleo-l4` and `/dev/ferrite-usb0` for the boards ferrite
 supports, accessible to the `dialout` group.
 
