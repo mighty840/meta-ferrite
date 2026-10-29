@@ -5,11 +5,12 @@ units. Configured in /etc/ferrite/agent.conf."
 
 # ferrite-agent itself is MIT. The other licences belong to crates linked
 # into the binary (for dual-licensed crates the MIT option is used):
-# Unicode-3.0 (ICU data via url/idna); with tls, rustls/ring/webpki
-# (Apache-2.0, ISC, BSD-3-Clause, CDLA-Permissive-2.0 for the bundled
+# Unicode-3.0 (ICU data via url/idna), subtle (BSD-3-Clause, via the AES-CCM
+# crates that seal reports with a device credential); with tls,
+# rustls/ring/webpki (Apache-2.0, ISC, CDLA-Permissive-2.0 for the bundled
 # Mozilla root certificates). Recheck with `cargo tree -e normal -f '{l}'`
 # when SRCREV changes.
-LICENSE = "MIT & Unicode-3.0${@bb.utils.contains('PACKAGECONFIG', 'tls', ' & Apache-2.0 & ISC & BSD-3-Clause & CDLA-Permissive-2.0', '', d)}"
+LICENSE = "MIT & BSD-3-Clause & Unicode-3.0${@bb.utils.contains('PACKAGECONFIG', 'tls', ' & Apache-2.0 & ISC & CDLA-Permissive-2.0', '', d)}"
 
 require recipes-ferrite/include/ferrite-sdk.inc
 require ${BPN}-crates.inc

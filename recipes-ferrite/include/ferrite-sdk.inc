@@ -11,7 +11,7 @@ BUGTRACKER = "https://github.com/mighty840/ferrite-sdk/issues"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=037172940eb9078f2002044edf36809a"
 
 SRC_URI = "git://github.com/mighty840/ferrite-sdk.git;protocol=https;branch=main"
-SRCREV = "d6f4704af1f951677daa7a7422bf51388bd69a5e"
+SRCREV = "f3750013013c089987fd1c528e51cf38ceb95fd6"
 PV = "0.1.0+git"
 
 S = "${WORKDIR}/git"

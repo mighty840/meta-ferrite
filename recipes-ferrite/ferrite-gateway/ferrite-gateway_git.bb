@@ -46,12 +46,11 @@ do_install:append() {
 
     if ${@bb.utils.contains('PACKAGECONFIG', 'usb', 'true', 'false', d)}; then
         # Stable /dev/ferrite-* names for the boards ferrite-sdk supports,
-        # taken from upstream. Upstream makes the nodes world-writable (0666);
-        # here only the dialout group gets access, which the service joins.
+        # from upstream. Only the dialout group gets access, which the
+        # service joins; fail if a future upstream makes nodes world-writable.
         install -d ${D}${nonarch_base_libdir}/udev/rules.d
-        sed -e 's/MODE="0666"/GROUP="dialout", MODE="0660"/' \
-            ${S}/deploy/rpi-gateway/99-ferrite.rules \
-            > ${D}${nonarch_base_libdir}/udev/rules.d/99-ferrite.rules
+        install -m 0644 ${S}/deploy/rpi-gateway/99-ferrite.rules \
+            ${D}${nonarch_base_libdir}/udev/rules.d/99-ferrite.rules
         if grep -q '0666' ${D}${nonarch_base_libdir}/udev/rules.d/99-ferrite.rules; then
             bbfatal "99-ferrite.rules still contains world-writable device modes"
         fi

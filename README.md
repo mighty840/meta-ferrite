@@ -115,6 +115,13 @@ do_install:append() {
 Keep secrets such as `api_key` out of images you distribute; provision them per
 device instead. The file is readable by root and the `ferrite-agent` group only.
 
+The same goes for a device credential. With a `[credential]` table (`key_id`
+and `key`, issued by the server with `POST /devices/<id>/credential`), the
+agent seals every report with the device's own key, so the server can tell it
+apart from anything else claiming that device ID. Write the credential into
+`agent.conf` at provisioning time, never into the image. See
+[Per-device credentials](https://mighty840.github.io/ferrite-sdk/guide/security#per-device-credentials).
+
 The agent runs as the unprivileged system user `ferrite-agent`, created at
 build time by `useradd` (so read-only root filesystems work) and matching the
 `sysusers.d` file shipped with it. State (boot tracking, the offline spool)
